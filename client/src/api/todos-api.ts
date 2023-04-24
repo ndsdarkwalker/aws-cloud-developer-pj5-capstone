@@ -3,6 +3,7 @@ import { Todo } from '../types/Todo';
 import { CreateTodoRequest } from '../types/CreateTodoRequest';
 import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
+import { SearchTodoRequest } from '../types/SearchTodoRequest'
 
 export async function getTodos(idToken: string): Promise<Todo[]> {
   console.log('Fetching todos')
@@ -70,4 +71,24 @@ export async function getUploadUrl(
 
 export async function uploadFile(uploadUrl: string, file: Buffer): Promise<void> {
   await Axios.put(uploadUrl, file)
+}
+
+export async function searchTodos(
+  idToken: string,
+  searchReq: SearchTodoRequest
+): Promise<Todo[]> {
+  console.log('Search todo ', searchReq)
+
+  const response = await Axios.post(
+    `${apiEndpoint}/todos/search`,
+    JSON.stringify(searchReq),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${idToken}`
+      }
+    }
+  )
+  console.log('Todos:', response.data)
+  return response.data.items
 }
